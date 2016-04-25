@@ -1,9 +1,14 @@
-package roman
+package main
 
-import "strings"
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
 
 type Pair struct {
-	arabic int
+	arabic uint64
 	roman  string
 }
 
@@ -23,14 +28,30 @@ var table = []Pair{
 	{1, "I"},
 }
 
-func Convert(n int) string {
+func Convert(n uint64) string {
 	roman := ""
 	remainder := n
 	for _, pair := range table {
 		times := remainder / pair.arabic
 		remainder = remainder % pair.arabic
 
-		roman += strings.Repeat(pair.roman, times)
+		roman += strings.Repeat(pair.roman, int(times))
 	}
 	return roman
+}
+
+func main() {
+	errMsg := "Usage: roman <integer>"
+	if len(os.Args) != 2 {
+		fmt.Println(errMsg)
+		os.Exit(1)
+	}
+
+	input, err := strconv.ParseUint(os.Args[1], 10, 64)
+	if err != nil {
+		fmt.Println(errMsg)
+		os.Exit(1)
+	}
+
+	fmt.Println(Convert(input))
 }

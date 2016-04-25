@@ -1,4 +1,4 @@
-package roman
+package main
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 
 func TestConversions(t *testing.T) {
 	expectations := []struct {
-		n        int    // input
+		n        uint64 // input
 		expected string // expected result
 	}{
 		{1, "I"},
