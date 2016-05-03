@@ -27,9 +27,9 @@ func main() {
 
 func primes(limit int) []int {
 	var bitfields []bool = make([]bool, limit)
-	var primes []int
+	var primes []int = []int{2} // 2 is the only even prime
 
-	for num := 2; num < limit; num++ {
+	for num := 3; num < limit; num += 2 {
 		// Collect prime
 		if !bitfields[num] {
 			primes = append(primes, num)
