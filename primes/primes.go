@@ -2,17 +2,23 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 )
 
 func main() {
-	limit := 1000
+	limit, err := strconv.Atoi(os.Args[1])
+	if err != nil || limit < 0 {
+		fmt.Println("Usage: primes <upto>")
+		os.Exit(1)
+	}
 
 	start := time.Now()
-	primes := primes(limit)
+	foundPrimes := primes(limit)
 	end := time.Now()
 
-	fmt.Println(primes)
+	fmt.Println(foundPrimes)
 	fmt.Println("finished in", end.Sub(start))
 }
 
