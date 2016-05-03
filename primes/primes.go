@@ -22,6 +22,7 @@ func main() {
 	if len(os.Args) == 2 {
 		fmt.Println(foundPrimes)
 	}
+	fmt.Println(len(foundPrimes), "primes found")
 	fmt.Println("finished in", end.Sub(start))
 }
 
