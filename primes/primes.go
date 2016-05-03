@@ -18,7 +18,10 @@ func main() {
 	foundPrimes := primes(limit)
 	end := time.Now()
 
-	fmt.Println(foundPrimes)
+	// Print the primes unless given a second argument
+	if len(os.Args) == 2 {
+		fmt.Println(foundPrimes)
+	}
 	fmt.Println("finished in", end.Sub(start))
 }
 
