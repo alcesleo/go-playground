@@ -36,9 +36,11 @@ func primes(limit int) []int {
 			primes = append(primes, num)
 		}
 
-		// Cross off all multiples
-		for multiple := num * 2; multiple < limit; multiple += num {
-			bitfields[multiple] = true
+		// Cross off all multiples, everything past the root has already been taken care of
+		if num*num <= limit {
+			for multiple := num * 2; multiple < limit; multiple += num {
+				bitfields[multiple] = true
+			}
 		}
 	}
 
