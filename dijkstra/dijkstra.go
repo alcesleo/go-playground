@@ -225,7 +225,7 @@ func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, in
 func main() {
 	graph := GenerateGraph()
 
-	fmt.Println("Randomly generated graph:")
+	fmt.Println("Graph:")
 	graph.Display()
 	fmt.Println()
 
