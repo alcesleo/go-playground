@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
 // Data structure of a weighted directed graph
@@ -18,6 +19,11 @@ type Vertex struct {
 type Edge struct {
 	Destination *Vertex
 	Weight      int
+}
+
+// Helper type for the algorithm, Go unfortunately doesn't have Set yet :(
+type VertexSet struct {
+	Vertices map[*Vertex]bool
 }
 
 // Constructors
@@ -39,6 +45,12 @@ func NewEdge(destination *Vertex, weight int) *Edge {
 	return &Edge{
 		Destination: destination,
 		Weight:      weight,
+	}
+}
+
+func NewVertexSet() *VertexSet {
+	return &VertexSet{
+		make(map[*Vertex]bool),
 	}
 }
 
@@ -65,6 +77,23 @@ func (v *Vertex) AddEdge(edge *Edge) {
 func (v *Vertex) Connect(destination *Vertex, weight int) {
 	edge := NewEdge(destination, weight)
 	v.AddEdge(edge)
+}
+
+func (vs *VertexSet) Add(vertex *Vertex) {
+	vs.Vertices[vertex] = true
+}
+
+func (vs *VertexSet) Has(vertex *Vertex) bool {
+	_, exists := vs.Vertices[vertex]
+	return exists
+}
+
+func (vs *VertexSet) Remove(vertex *Vertex) {
+	delete(vs.Vertices, vertex)
+}
+
+func (vs *VertexSet) Length() int {
+	return len(vs.Vertices)
 }
 
 // Generate data
@@ -111,8 +140,65 @@ func (g *Graph) Display() {
 // Finds the cheapest path between two vertices in a graph
 // Returns a slice of the steps and the total cost of those steps
 // When given debug=true also outputs logging of every path evaluated
-func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex, debug bool) ([]*Vertex, int) {
+func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, int) {
+	unvisited := NewVertexSet()
+	cost := make(map[*Vertex]int)     // Maps a vertex to its current calculated cost
+	prev := make(map[*Vertex]*Vertex) // Maps a vertex to the previous vertex in the cheapest path to get here
 
+	// Set up all the maps keeping track of values
+	for _, vertex := range graph.Vertices {
+		cost[vertex] = math.MaxInt32
+		prev[vertex] = nil
+		unvisited.Add(vertex)
+	}
+
+	// We start at origin, so it will be selected first
+	cost[origin] = 0
+
+	// While unvisited is not empty
+	for unvisited.Length() > 0 {
+		// Find the vertex with the lowest cost
+		// TODO: Extract this to VertexPriorityQueue
+		var currentVertex *Vertex = nil
+		for vertex := range unvisited.Vertices {
+			if cost[currentVertex] > cost[vertex] || currentVertex == nil {
+				currentVertex = vertex
+			}
+		}
+
+		// If we are at the destination we are done
+		if currentVertex == destination {
+			break
+		}
+
+		// We have now visited this vertex
+		unvisited.Remove(currentVertex)
+
+		// For each neighbour of currentVertex where the neighbour is still unvisited
+		for _, edge := range currentVertex.Edges {
+			neighbour := edge.Destination
+			if !unvisited.Has(neighbour) {
+				continue
+			}
+
+			alt := cost[currentVertex] + edge.Weight
+			if alt < cost[neighbour] {
+				cost[neighbour] = alt
+				prev[neighbour] = currentVertex
+			}
+		}
+
+	}
+
+	// Extract the best path
+	result := make([]*Vertex, 0)
+	target := destination
+	result = append(result, target) // Start from the target
+	for prev[target] != nil {
+		result = append([]*Vertex{prev[target]}, result...)
+		target = prev[target]
+	}
+	return result, cost[destination]
 }
 
 func main() {
@@ -122,9 +208,14 @@ func main() {
 	graph.Display()
 	fmt.Println()
 
-	fmt.Println("Finding path between A and C:")
-
+	fmt.Println("Finding path between A and C...")
 	origin := graph.FindVertex("A")
 	destination := graph.FindVertex("C")
-	path, cost := graph.Dijkstra(origin, destination, true)
+	path, cost := graph.Dijkstra(origin, destination)
+
+	fmt.Println("Result:")
+	for _, vertex := range path {
+		fmt.Printf(" -> %v", vertex.Id)
+	}
+	fmt.Printf("\n Cost: %v", cost)
 }
