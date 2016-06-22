@@ -76,6 +76,16 @@ func (g *Graph) FindVertex(id string) *Vertex {
 	panic("No vertex found")
 }
 
+func (g *Graph) Display() {
+	for _, vertex := range g.Vertices {
+		fmt.Printf(" - %v\n", vertex.Id)
+		for _, edge := range vertex.Edges {
+			fmt.Printf("   |-> %v (%v)\n", edge.Destination.Id, edge.Weight)
+		}
+		fmt.Println()
+	}
+}
+
 func (v *Vertex) AddEdge(edge *Edge) {
 	v.Edges = append(v.Edges, edge)
 }
@@ -169,35 +179,20 @@ func GenerateGraph() *Graph {
 	return graph
 }
 
-// Print graph
-
-func (g *Graph) Display() {
-	for _, vertex := range g.Vertices {
-		fmt.Printf(" - %v\n", vertex.Id)
-		for _, edge := range vertex.Edges {
-			fmt.Printf("   |-> %v (%v)\n", edge.Destination.Id, edge.Weight)
-		}
-		fmt.Println()
-	}
-}
-
-// Find the path between them
-
 // Finds the cheapest path between two vertices in a graph
 // Returns a slice of the steps and the total cost of those steps
 func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, int) {
-
 	// Add all the vertices to a set
-	unvisited := NewVertexSet()
+	vertices := NewVertexSet()
 	for _, vertex := range graph.Vertices {
-		unvisited.Add(vertex)
+		vertices.Add(vertex)
 	}
 
 	// We start at origin, so it will be selected first
 	origin.Cost = 0
 
-	for unvisited.HasContent() {
-		currentVertex := unvisited.PopCheapest()
+	for vertices.HasContent() {
+		currentVertex := vertices.PopCheapest()
 
 		if currentVertex == destination {
 			break
@@ -206,7 +201,7 @@ func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, in
 		// For each neighbour of currentVertex where the neighbour is still unvisited
 		for _, edge := range currentVertex.Edges {
 			neighbour := edge.Destination
-			if !unvisited.Contains(neighbour) {
+			if !vertices.Contains(neighbour) {
 				continue
 			}
 
@@ -238,5 +233,5 @@ func main() {
 	for _, vertex := range path {
 		fmt.Printf(" -> %v", vertex.Id)
 	}
-	fmt.Printf(" (%v)", cost)
+	fmt.Printf(" (%v)\n", cost)
 }
