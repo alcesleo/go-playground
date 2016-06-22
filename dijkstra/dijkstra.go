@@ -14,6 +14,10 @@ type Graph struct {
 type Vertex struct {
 	Id    string
 	Edges []*Edge
+
+	// Used by the Dijkstra algorithm, could be extracted
+	Cost int
+	Prev *Vertex
 }
 
 type Edge struct {
@@ -21,7 +25,6 @@ type Edge struct {
 	Weight      int
 }
 
-// Helper type for the algorithm, Go unfortunately doesn't have Set yet :(
 type VertexSet struct {
 	Vertices map[*Vertex]bool
 }
@@ -38,6 +41,9 @@ func NewVertex(Id string) *Vertex {
 	return &Vertex{
 		Id:    Id,
 		Edges: make([]*Edge, 0),
+
+		Cost: math.MaxInt32,
+		Prev: nil,
 	}
 }
 
@@ -79,11 +85,23 @@ func (v *Vertex) Connect(destination *Vertex, weight int) {
 	v.AddEdge(edge)
 }
 
+// Follows Prev to the origin and returns a slice of all the steps from origin to here
+func (v *Vertex) Path() []*Vertex {
+	target := v
+	result := []*Vertex{v} // Start from the here
+
+	for target.Prev != nil {
+		result = append([]*Vertex{target.Prev}, result...)
+		target = target.Prev
+	}
+	return result
+}
+
 func (vs *VertexSet) Add(vertex *Vertex) {
 	vs.Vertices[vertex] = true
 }
 
-func (vs *VertexSet) Has(vertex *Vertex) bool {
+func (vs *VertexSet) Contains(vertex *Vertex) bool {
 	_, exists := vs.Vertices[vertex]
 	return exists
 }
@@ -94,6 +112,22 @@ func (vs *VertexSet) Remove(vertex *Vertex) {
 
 func (vs *VertexSet) Len() int {
 	return len(vs.Vertices)
+}
+
+func (vs *VertexSet) PopCheapest() *Vertex {
+	var result *Vertex = nil
+	for vertex := range vs.Vertices {
+		if result == nil || result.Cost > vertex.Cost {
+			result = vertex
+		}
+	}
+	vs.Remove(result)
+
+	return result
+}
+
+func (vs *VertexSet) HasContent() bool {
+	return vs.Len() > 0
 }
 
 // Generate data
@@ -151,66 +185,41 @@ func (g *Graph) Display() {
 
 // Finds the cheapest path between two vertices in a graph
 // Returns a slice of the steps and the total cost of those steps
-// When given debug=true also outputs logging of every path evaluated
 func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, int) {
-	unvisited := NewVertexSet()
-	cost := make(map[*Vertex]int)     // Maps a vertex to its current calculated cost
-	prev := make(map[*Vertex]*Vertex) // Maps a vertex to the previous vertex in the cheapest path to get here
 
-	// Set up all the maps keeping track of values
+	// Add all the vertices to a set
+	unvisited := NewVertexSet()
 	for _, vertex := range graph.Vertices {
-		cost[vertex] = math.MaxInt32
-		prev[vertex] = nil
 		unvisited.Add(vertex)
 	}
 
 	// We start at origin, so it will be selected first
-	cost[origin] = 0
+	origin.Cost = 0
 
-	// While unvisited is not empty
-	for unvisited.Len() > 0 {
-		// Find the vertex with the lowest cost
-		// TODO: Extract this to VertexPriorityQueue
-		var currentVertex *Vertex = nil
-		for vertex := range unvisited.Vertices {
-			if cost[currentVertex] > cost[vertex] || currentVertex == nil {
-				currentVertex = vertex
-			}
-		}
+	for unvisited.HasContent() {
+		currentVertex := unvisited.PopCheapest()
 
-		// If we are at the destination we are done
 		if currentVertex == destination {
 			break
 		}
 
-		// We have now visited this vertex
-		unvisited.Remove(currentVertex)
-
 		// For each neighbour of currentVertex where the neighbour is still unvisited
 		for _, edge := range currentVertex.Edges {
 			neighbour := edge.Destination
-			if !unvisited.Has(neighbour) {
+			if !unvisited.Contains(neighbour) {
 				continue
 			}
 
-			alt := cost[currentVertex] + edge.Weight
-			if alt < cost[neighbour] {
-				cost[neighbour] = alt
-				prev[neighbour] = currentVertex
+			cost := currentVertex.Cost + edge.Weight
+			if cost < neighbour.Cost {
+				neighbour.Cost = cost
+				neighbour.Prev = currentVertex
 			}
 		}
 
 	}
 
-	// Extract the best path
-	result := make([]*Vertex, 0)
-	target := destination
-	result = append(result, target) // Start from the target
-	for prev[target] != nil {
-		result = append([]*Vertex{prev[target]}, result...)
-		target = prev[target]
-	}
-	return result, cost[destination]
+	return destination.Path(), destination.Cost
 }
 
 func main() {
