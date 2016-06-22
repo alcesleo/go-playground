@@ -92,7 +92,7 @@ func (vs *VertexSet) Remove(vertex *Vertex) {
 	delete(vs.Vertices, vertex)
 }
 
-func (vs *VertexSet) Length() int {
+func (vs *VertexSet) Len() int {
 	return len(vs.Vertices)
 }
 
@@ -106,19 +106,31 @@ func GenerateGraph() *Graph {
 	b := NewVertex("B")
 	c := NewVertex("C")
 	d := NewVertex("D")
+	e := NewVertex("E")
+	f := NewVertex("F")
+	g := NewVertex("G")
 
 	// Connect them to each other
 	a.Connect(b, 5)
 	a.Connect(d, 10)
+	a.Connect(f, 50)
 	b.Connect(d, 2)
 	b.Connect(c, 20)
 	d.Connect(c, 10)
+	d.Connect(e, 1)
+	e.Connect(g, 1)
+	e.Connect(c, 5)
+	g.Connect(f, 2)
+	f.Connect(c, 1)
 
 	// Add the vertices to the graph
 	graph.AddVertex(a)
 	graph.AddVertex(b)
 	graph.AddVertex(c)
 	graph.AddVertex(d)
+	graph.AddVertex(e)
+	graph.AddVertex(f)
+	graph.AddVertex(g)
 
 	return graph
 }
@@ -127,9 +139,9 @@ func GenerateGraph() *Graph {
 
 func (g *Graph) Display() {
 	for _, vertex := range g.Vertices {
-		fmt.Println(vertex.Id)
+		fmt.Printf(" - %v\n", vertex.Id)
 		for _, edge := range vertex.Edges {
-			fmt.Printf("  -> %v (%v)\n", edge.Destination.Id, edge.Weight)
+			fmt.Printf("   |-> %v (%v)\n", edge.Destination.Id, edge.Weight)
 		}
 		fmt.Println()
 	}
@@ -156,7 +168,7 @@ func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, in
 	cost[origin] = 0
 
 	// While unvisited is not empty
-	for unvisited.Length() > 0 {
+	for unvisited.Len() > 0 {
 		// Find the vertex with the lowest cost
 		// TODO: Extract this to VertexPriorityQueue
 		var currentVertex *Vertex = nil
@@ -217,5 +229,5 @@ func main() {
 	for _, vertex := range path {
 		fmt.Printf(" -> %v", vertex.Id)
 	}
-	fmt.Printf("\n Cost: %v", cost)
+	fmt.Printf(" (%v)", cost)
 }
