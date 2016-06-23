@@ -98,7 +98,7 @@ func (v *Vertex) Connect(destination *Vertex, weight int) {
 // Follows Prev to the origin and returns a slice of all the steps from origin to here
 func (v *Vertex) Path() []*Vertex {
 	target := v
-	result := []*Vertex{v} // Start from the here
+	result := []*Vertex{v} // Start from here
 
 	for target.Prev != nil {
 		result = append([]*Vertex{target.Prev}, result...)
