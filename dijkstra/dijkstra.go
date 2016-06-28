@@ -116,6 +116,13 @@ func (v *Vertex) Path() []*Vertex {
 	return result
 }
 
+func (v *Vertex) DisplayPath() {
+	for _, vertex := range v.Path() {
+		fmt.Printf(" -> %v", vertex.Id)
+	}
+	fmt.Printf(" (%v)\n", v.Cost)
+}
+
 func (vs *VertexSet) Add(vertex *Vertex) {
 	vs.Vertices[vertex] = true
 }
@@ -207,8 +214,8 @@ func GenerateGraph(vertices int, sparseness float32, maxCost int) *Graph {
 }
 
 // Finds the cheapest path between two vertices in a graph
-// Returns a slice of the steps and the total cost of those steps
-func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, int) {
+// Returns the destination vertex after it has been filled with the best path
+func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) *Vertex {
 	// Add all the vertices to a set
 	vertices := NewVertexSet()
 	for _, vertex := range graph.Vertices {
@@ -238,10 +245,9 @@ func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, in
 				neighbour.Prev = currentVertex
 			}
 		}
-
 	}
 
-	return destination.Path(), destination.Cost
+	return destination
 }
 
 func main() {
@@ -252,11 +258,8 @@ func main() {
 	graph.Display()
 
 	fmt.Printf("Finding path between %v and %v...\n", origin.Id, destination.Id)
-	path, cost := graph.Dijkstra(origin, destination)
+	graph.Dijkstra(origin, destination)
 
 	fmt.Println("Result:")
-	for _, vertex := range path {
-		fmt.Printf(" -> %v", vertex.Id)
-	}
-	fmt.Printf(" (%v)\n", cost)
+	destination.DisplayPath()
 }
