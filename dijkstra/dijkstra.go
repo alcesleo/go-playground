@@ -31,7 +31,7 @@ type VertexSet struct {
 
 // Constructors
 
-func NewWeightedGraph() *Graph {
+func NewGraph() *Graph {
 	return &Graph{
 		Vertices: make([]*Vertex, 0),
 	}
@@ -164,7 +164,7 @@ func IntToId(n int) string {
 // Generate data
 
 func GenerateGraph() *Graph {
-	graph := NewWeightedGraph()
+	graph := NewGraph()
 
 	// Create vertices
 	a := NewVertex(IntToId(1))
