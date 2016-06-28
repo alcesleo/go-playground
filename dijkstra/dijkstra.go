@@ -77,6 +77,7 @@ func (g *Graph) FindVertex(id string) *Vertex {
 }
 
 func (g *Graph) Display() {
+	fmt.Println("Graph:")
 	for _, vertex := range g.Vertices {
 		fmt.Printf(" - %v\n", vertex.Id)
 		for _, edge := range vertex.Edges {
@@ -220,9 +221,7 @@ func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, in
 func main() {
 	graph := GenerateGraph()
 
-	fmt.Println("Graph:")
 	graph.Display()
-	fmt.Println()
 
 	fmt.Println("Finding path between A and C...")
 	origin := graph.FindVertex("A")
