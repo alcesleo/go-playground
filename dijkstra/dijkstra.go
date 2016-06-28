@@ -245,13 +245,13 @@ func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, in
 }
 
 func main() {
-	graph := GenerateGraph(10, 3.0, 20)
+	graph := GenerateGraph(20, 2.0, 20)
+	origin := graph.FindVertex("A")
+	destination := graph.FindVertex("T")
 
 	graph.Display()
 
-	fmt.Println("Finding path between A and C...")
-	origin := graph.FindVertex("A")
-	destination := graph.FindVertex("C")
+	fmt.Printf("Finding path between %v and %v...\n", origin.Id, destination.Id)
 	path, cost := graph.Dijkstra(origin, destination)
 
 	fmt.Println("Result:")
