@@ -61,6 +61,14 @@ func NewVertexSet() *VertexSet {
 	}
 }
 
+func NewVertexSetFromSlice(vertices []*Vertex) *VertexSet {
+	result := NewVertexSet()
+	for _, vertex := range vertices {
+		result.Add(vertex)
+	}
+	return result
+}
+
 // Instance methods
 
 func (g *Graph) AddVertex(vertex *Vertex) {
@@ -216,11 +224,7 @@ func GenerateGraph(vertices int, sparseness float32, maxCost int) *Graph {
 // Finds the cheapest path between two vertices in a graph
 // Returns the destination vertex after it has been filled with the best path
 func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) *Vertex {
-	// Add all the vertices to a set
-	vertices := NewVertexSet()
-	for _, vertex := range graph.Vertices {
-		vertices.Add(vertex)
-	}
+	vertices := NewVertexSetFromSlice(graph.Vertices)
 
 	// We start at origin, so it will be selected first
 	origin.Cost = 0
