@@ -141,19 +141,39 @@ func (vs *VertexSet) HasContent() bool {
 	return vs.Len() > 0
 }
 
+// Converts an int to a letter-id
+func IntToId(n int) string {
+	numLetters := 26
+	asciiOffset := 64
+	rest := n
+	result := make([]byte, 0)
+
+	for rest > 0 {
+		temp := rest % numLetters
+		if temp == 0 {
+			temp = numLetters
+		}
+		rest = rest / numLetters
+		char := byte(temp + asciiOffset)
+
+		result = append([]byte{char}, result...)
+	}
+	return string(result[:])
+}
+
 // Generate data
 
 func GenerateGraph() *Graph {
 	graph := NewWeightedGraph()
 
 	// Create vertices
-	a := NewVertex("A")
-	b := NewVertex("B")
-	c := NewVertex("C")
-	d := NewVertex("D")
-	e := NewVertex("E")
-	f := NewVertex("F")
-	g := NewVertex("G")
+	a := NewVertex(IntToId(1))
+	b := NewVertex(IntToId(2))
+	c := NewVertex(IntToId(3))
+	d := NewVertex(IntToId(4))
+	e := NewVertex(IntToId(5))
+	f := NewVertex(IntToId(6))
+	g := NewVertex(IntToId(7))
 
 	// Connect them to each other
 	a.Connect(b, 5)
