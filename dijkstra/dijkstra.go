@@ -158,12 +158,12 @@ func IntToId(n int) string {
 	result := make([]byte, 0)
 
 	for rest > 0 {
-		temp := rest % numLetters
-		if temp == 0 {
-			temp = numLetters
+		letterPos := rest % numLetters
+		if letterPos == 0 {
+			letterPos = numLetters
 		}
 		rest = rest / numLetters
-		char := byte(temp + asciiOffset)
+		char := byte(letterPos + asciiOffset)
 
 		result = append([]byte{char}, result...)
 	}
