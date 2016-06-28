@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/rand"
 )
 
 // Data structure of a weighted directed graph
@@ -74,6 +75,14 @@ func (g *Graph) FindVertex(id string) *Vertex {
 	}
 
 	panic("No vertex found")
+}
+
+func (g *Graph) RandomVertex() *Vertex {
+	numVertices := len(g.Vertices)
+	if numVertices == 0 {
+		panic("No vertices in graph")
+	}
+	return g.Vertices[rand.Intn(len(g.Vertices))]
 }
 
 func (g *Graph) Display() {
@@ -163,39 +172,36 @@ func IntToId(n int) string {
 
 // Generate data
 
-func GenerateGraph() *Graph {
+// Generate a random graph with a given number of vertices, and a sparseness
+// factor deciding how many edges should be created. A graph with 10 vertices
+// and a sparseness factor of 2.0 will have around 20 edges.
+func GenerateGraph(vertices int, sparseness float32, maxCost int) *Graph {
 	graph := NewGraph()
 
-	// Create vertices
-	a := NewVertex(IntToId(1))
-	b := NewVertex(IntToId(2))
-	c := NewVertex(IntToId(3))
-	d := NewVertex(IntToId(4))
-	e := NewVertex(IntToId(5))
-	f := NewVertex(IntToId(6))
-	g := NewVertex(IntToId(7))
+	// Create the starting point so there's something to connect from in the loop
+	graph.AddVertex(NewVertex(IntToId(1)))
 
-	// Connect them to each other
-	a.Connect(b, 5)
-	a.Connect(d, 10)
-	a.Connect(f, 50)
-	b.Connect(d, 2)
-	b.Connect(c, 20)
-	d.Connect(c, 10)
-	d.Connect(e, 1)
-	e.Connect(g, 1)
-	e.Connect(c, 5)
-	g.Connect(f, 2)
-	f.Connect(c, 1)
+	// Create a vertex with a connection from a random vertex already created
+	for n := 2; n < vertices+1; n++ {
+		vertex := NewVertex(IntToId(n))
+		randomVertex := graph.RandomVertex()
+		randomVertex.Connect(vertex, rand.Intn(maxCost))
+		graph.AddVertex(vertex)
+	}
 
-	// Add the vertices to the graph
-	graph.AddVertex(a)
-	graph.AddVertex(b)
-	graph.AddVertex(c)
-	graph.AddVertex(d)
-	graph.AddVertex(e)
-	graph.AddVertex(f)
-	graph.AddVertex(g)
+	// Create an edge between 2 random vertices until the sparseness factor is reached
+	edgesLeft := int((float32(vertices) * sparseness)) - vertices
+	for n := 0; n < edgesLeft; n++ {
+		source := graph.RandomVertex()
+
+		// Make sure the destination is not the source
+		destination := source
+		for source == destination {
+			destination = graph.RandomVertex()
+		}
+
+		source.Connect(destination, rand.Intn(maxCost))
+	}
 
 	return graph
 }
@@ -239,7 +245,7 @@ func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, in
 }
 
 func main() {
-	graph := GenerateGraph()
+	graph := GenerateGraph(10, 3.0, 20)
 
 	graph.Display()
 
