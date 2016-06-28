@@ -184,7 +184,8 @@ func GenerateGraph(vertices int, sparseness float32, maxCost int) *Graph {
 	for n := 2; n < vertices+1; n++ {
 		vertex := NewVertex(IntToId(n))
 		randomVertex := graph.RandomVertex()
-		randomVertex.Connect(vertex, rand.Intn(maxCost))
+		randomCost := rand.Intn(maxCost) + 1
+		randomVertex.Connect(vertex, randomCost)
 		graph.AddVertex(vertex)
 	}
 
@@ -244,9 +245,9 @@ func (graph *Graph) Dijkstra(origin *Vertex, destination *Vertex) ([]*Vertex, in
 }
 
 func main() {
-	graph := GenerateGraph(20, 2.0, 20)
+	graph := GenerateGraph(7, 2.0, 10)
 	origin := graph.FindVertex("A")
-	destination := graph.FindVertex("T")
+	destination := graph.FindVertex("G")
 
 	graph.Display()
 
