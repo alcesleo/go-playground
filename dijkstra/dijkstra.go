@@ -86,11 +86,10 @@ func (g *Graph) RandomVertex() *Vertex {
 }
 
 func (g *Graph) Display() {
-	fmt.Println("Graph:")
 	for _, vertex := range g.Vertices {
 		fmt.Printf(" - %v\n", vertex.Id)
 		for _, edge := range vertex.Edges {
-			fmt.Printf("   |-> %v (%v)\n", edge.Destination.Id, edge.Weight)
+			fmt.Printf("   |-- %v --> %v\n", edge.Weight, edge.Destination.Id)
 		}
 		fmt.Println()
 	}
