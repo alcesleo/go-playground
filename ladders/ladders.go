@@ -100,7 +100,7 @@ func buildGraph(words []string) map[string][]string {
 func filterNumLetters(words []string, n int) []string {
 	result := make([]string, 0)
 	for _, word := range words {
-		if len(word) == 5 {
+		if len(word) == n {
 			result = append(result, word)
 		}
 	}
