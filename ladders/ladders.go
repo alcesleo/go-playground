@@ -8,8 +8,10 @@ import (
 )
 
 func main() {
+	dict := "/usr/share/dict/words"
 	limit := 5
-	words := limitNumLetters(dictionary(), limit)
+
+	words := limitNumLetters(readWords(dict), limit)
 	graph := buildGraph(words)
 
 	printShortestPath(graph, "cold", "warm")
@@ -17,13 +19,14 @@ func main() {
 	printShortestPath(graph, "right", "wrong")
 }
 
-func dictionary() []string {
-	text, _ := ioutil.ReadFile("/usr/share/dict/words")
+func readWords(path string) []string {
+	text, _ := ioutil.ReadFile(path)
 	return strings.Split(string(text), "\n")
 }
 
 func printShortestPath(graph map[string][]string, start string, end string) {
 	path := findShortestPath(graph, start, end)
+
 	fmt.Printf("%v steps between %v and %v\n", len(path)-1, start, end)
 	fmt.Println(strings.Join(path, " -> "))
 	fmt.Println()
