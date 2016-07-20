@@ -7,9 +7,12 @@ Macs which is easy but not the greatest dictionary...
 
 ```bash
 $ go run ladders.go
-13 steps between chaos and order
+4 steps between cold and warm
+cold -> cord -> word -> ward -> warm
+
+12 steps between chaos and order
 chaos -> chais -> chair -> cheir -> cheer -> sheer -> smeer -> emeer -> emmer -> ammer -> armer -> ormer -> order
 
-21 steps between right and wrong
-right -> dight -> digit -> dimit -> demit -> remit -> refit -> befit -> besit -> beset -> beret -> buret -> burst -> burse -> birse -> biose -> brose -> prose -> prone -> prong -> wrong
+20 steps between right and wrong
+right -> dight -> digit -> dimit -> demit -> remit -> remix -> remex -> resex -> resee -> besee -> belee -> belve -> beeve -> breve -> brede -> bride -> brine -> bring -> wring -> wrong
 ```

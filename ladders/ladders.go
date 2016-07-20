@@ -8,10 +8,11 @@ import (
 )
 
 func main() {
-	length := 5
-	words := filterNumLetters(dictionary(), length)
+	limit := 5
+	words := limitNumLetters(dictionary(), limit)
 	graph := buildGraph(words)
 
+	printShortestPath(graph, "cold", "warm")
 	printShortestPath(graph, "chaos", "order")
 	printShortestPath(graph, "right", "wrong")
 }
@@ -23,7 +24,7 @@ func dictionary() []string {
 
 func printShortestPath(graph map[string][]string, start string, end string) {
 	path := findShortestPath(graph, start, end)
-	fmt.Printf("%v steps between %v and %v\n", len(path), start, end)
+	fmt.Printf("%v steps between %v and %v\n", len(path)-1, start, end)
 	fmt.Println(strings.Join(path, " -> "))
 	fmt.Println()
 }
@@ -97,10 +98,10 @@ func buildGraph(words []string) map[string][]string {
 	return graph
 }
 
-func filterNumLetters(words []string, n int) []string {
+func limitNumLetters(words []string, n int) []string {
 	result := make([]string, 0)
 	for _, word := range words {
-		if len(word) == n {
+		if len(word) <= n {
 			result = append(result, word)
 		}
 	}
